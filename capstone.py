@@ -65,9 +65,9 @@ territory = selectbox3
 start_row = extract_date_from_text(start_date)
 end_row =  extract_date_from_text(end_date)
 if (start_row == -1) or (end_row > 126):
-    st.warning('No data available. Check your quarter and year selection.', icon='⚠️')
+    st.error('No data available. Check your quarter and year selection.', icon='⚠️')
 elif (start_row >= end_row):
-    st.warning('Dates dont work. Start date must com befor end date.', icon='⚠️')
+    st.error('Dates dont work. Start date must com befor end date.', icon='⚠️')
 else:
     start_date_population = (df.iloc[start_row, city_dict[territory]]).tolist()
     end_date_population = (df.iloc[end_row, city_dict[territory]]).tolist()
