@@ -62,44 +62,44 @@ with st.form(key="form 1", clear_on_submit=False):
 start_date = selectbox1 + ' ' + str(slider1)
 end_date = selectbox2 + ' ' + str(slider2)
 territory = selectbox3
-
 start_row = extract_date_from_text(start_date)
-if start_row == -1 :
-    st.warning('This is a warning message', icon='⚠️')
 end_row =  extract_date_from_text(end_date)
-start_date_population = (df.iloc[start_row, city_dict[territory]]).tolist()
-end_date_population = (df.iloc[end_row, city_dict[territory]]).tolist()
-
-Population_array = df.loc[start_row:end_row, territory]
-time_list = num_list = num_list = list(range(start_row, end_row+1, 1))
-
-tab1, tab2 = st.tabs(['Population change', 'Compare'])
-with tab1:
-    st.subheader(f"Population change from {start_date} to {end_date}")
-    col1, col2 = st.columns(2)
-    with col1:
-        st.metric(label=start_date, value = start_date_population)
-        st.metric(label=end_date, value = end_date_population , delta=end_date_population - start_date_population, delta_color="normal")
-    with col2:
+if (start_row == -1) or (end_row > 126):
+    st.warning('No data available. Check your quarter and year selection.', icon='⚠️')
+elif (start_row >= end_row):
+    st.warning('Dates dont work. Start date must com befor end date.', icon='⚠️')
+else:
+    start_date_population = (df.iloc[start_row, city_dict[territory]]).tolist()
+    end_date_population = (df.iloc[end_row, city_dict[territory]]).tolist()
+    Population_array = df.loc[start_row:end_row, territory]
+    time_list = num_list = num_list = list(range(start_row, end_row+1, 1))
+    tab1, tab2 = st.tabs(['Population change', 'Compare'])
+    with tab1:
+        st.subheader(f"Population change from {start_date} to {end_date}")
+        col1, col2 = st.columns(2)
+        with col1:
+            st.metric(label=start_date, value = start_date_population)
+            st.metric(label=end_date, value = end_date_population , delta=end_date_population - start_date_population, delta_color="normal")
+        with col2:
+            fig, ax = plt.subplots()
+            ax.plot(Population_array)
+            # ax.set_title("title")
+            ax.set_xlabel("Time")
+            ax.set_ylabel("Population")
+            ax.set_xticks([time_list[0], time_list[-1]])
+            ax.set_xticklabels([start_date, end_date])
+            fig.autofmt_xdate()
+            st.pyplot(fig)
+    with tab2: 
+        st.subheader("Compare with other locations")
+        multiselect = st.multiselect("Chooe other locations", options=df.columns[1:])
         fig, ax = plt.subplots()
-        ax.plot(Population_array)
-        # ax.set_title("title")
+        for city in range(len(multiselect)):
+            ax.plot(df.loc[start_row:end_row, multiselect[city]])
         ax.set_xlabel("Time")
         ax.set_ylabel("Population")
         ax.set_xticks([time_list[0], time_list[-1]])
         ax.set_xticklabels([start_date, end_date])
         fig.autofmt_xdate()
         st.pyplot(fig)
-with tab2: 
-    st.subheader("Compare with other locations")
-    multiselect = st.multiselect("Chooe other locations", options=df.columns[1:])
-    fig, ax = plt.subplots()
-    for city in range(len(multiselect)):
-        ax.plot(df.loc[start_row:end_row, multiselect[city]])
-    ax.set_xlabel("Time")
-    ax.set_ylabel("Population")
-    ax.set_xticks([time_list[0], time_list[-1]])
-    ax.set_xticklabels([start_date, end_date])
-    fig.autofmt_xdate()
-    st.pyplot(fig)
 
