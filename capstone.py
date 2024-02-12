@@ -2,14 +2,14 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
-
+@st.cache_data
 def extract_index_from_date(list):
     index = (((list[1]-1991)*4)+(list[0]-3))
     if index >= 0:
         return index
     else: 
         return -1
-
+@st.cache_data
 def extract_date_from_text(str):
     list = []
     q = str[1]
